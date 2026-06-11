@@ -5,9 +5,10 @@ import lombok.Data;
 @Data //creates setter and getter function
 @Entity
 public class Employee {
+
     @Id
     private Long id;
     private String name;
-    private double salary;
-    private String role;
+    private Double salary;
+    private Role role;
 }
