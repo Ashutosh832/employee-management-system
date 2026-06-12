@@ -2,65 +2,85 @@ package com.ash.ems.service;
 
 import com.ash.ems.entity.Employee;
 import com.ash.ems.entity.EmployeeUpdate;
+import com.ash.ems.repository.EmployeeRepository;
 
-import java.util.*;
+import java.util.List;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class EmployeeService{
+public class EmployeeService {
 
-    List<Employee> employees = new ArrayList<>();
+    private final EmployeeRepository employeeRepository;
 
+    public EmployeeService(EmployeeRepository employeeRepository){
+        this.employeeRepository = employeeRepository;
+    }
 
     public List<Employee> get_all_Employees(){
-        return employees;
+        return employeeRepository.findAll();
     }
 
     public Employee create_employee(Employee employee){
-        boolean exist = employees.stream().anyMatch(emp -> emp.getId().equals(employee.getId()));
-        if(exist){
-            throw new ResponseStatusException(HttpStatusCode.valueOf(409),"The Employee already exists");
+
+        boolean exists =
+                employeeRepository.existsById(employee.getId());
+
+        if(exists){
+            throw new ResponseStatusException(
+                    HttpStatusCode.valueOf(409),
+                    "The Employee already exists");
         }
-        employees.add(employee);
-        return employee;
+
+        return employeeRepository.save(employee);
     }
 
     public Employee update_employee(Long id, EmployeeUpdate employee){
-        Employee existing_Employee = employees.stream()
-            .filter(emp -> emp.getId().equals(id))
-            .findFirst()
-            .orElseThrow(
-                ()->new ResponseStatusException(HttpStatusCode.valueOf(404),"The Employee doesn't exist"));
-        if(employee.getName()!= null){
-            existing_Employee.setName(employee.getName());
+
+        Employee existingEmployee =
+                employeeRepository.findById(id)
+                .orElseThrow(
+                    () -> new ResponseStatusException(
+                        HttpStatusCode.valueOf(404),
+                        "The Employee doesn't exist"));
+
+        if(employee.getName() != null){
+            existingEmployee.setName(employee.getName());
         }
+
         if(employee.getSalary() != null){
-            existing_Employee.setSalary(employee.getSalary());
+            existingEmployee.setSalary(employee.getSalary());
         }
-        if(employee.getRole() !=null){
-            existing_Employee.setRole(employee.getRole());
+
+        if(employee.getRole() != null){
+            existingEmployee.setRole(employee.getRole());
         }
-        return existing_Employee;
+
+        return employeeRepository.save(existingEmployee);
     }
-    
+
     public Employee searchEmployee(Long id){
-        Employee employee = employees.stream()
-            .filter(emp -> emp.getId().equals(id))
-            .findFirst()
-            .orElseThrow(
-                ()->new ResponseStatusException(HttpStatusCode.valueOf(404),"The Employee doesn't exist"));
-        return employee;
+        return employeeRepository.findById(id)
+                .orElseThrow(
+                    () -> new ResponseStatusException(
+                        HttpStatusCode.valueOf(404),
+                        "The Employee doesn't exist"));
+    }
+
+    public List<Employee> searchEmployeebyname(String name){
+        return employeeRepository
+                .findByNameContainingIgnoreCase(name);
     }
 
     public boolean DeleteEmployee(Long id){
-        Employee existing_Employee = employees.stream().filter(emp -> emp.getId().equals(id)).findFirst().get();
-        if(existing_Employee != null){
-            boolean report = employees.remove(existing_Employee);
-            return report;
+        if(!employeeRepository.existsById(id)){
+            throw new ResponseStatusException(
+                    HttpStatusCode.valueOf(404),
+                    "The Employee doesn't exist");
         }
-        return false;
+        employeeRepository.deleteById(id);
+        return true;
     }
 }

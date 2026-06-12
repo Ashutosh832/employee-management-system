@@ -1,5 +1,7 @@
 package com.ash.ems.entity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.Data;
 @Data //creates setter and getter function
@@ -10,5 +12,7 @@ public class Employee {
     private Long id;
     private String name;
     private Double salary;
+    
+    @Enumerated(EnumType.STRING)
     private Role role;
 }
