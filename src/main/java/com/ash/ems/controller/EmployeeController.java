@@ -39,6 +39,11 @@ public class EmployeeController {
     public List<Employee> route_get_Employee_by_name(@RequestParam String name){
         return employeeService.searchEmployeebyname(name);
     }
+
+    @GetMapping("/{id}")
+    public Employee route_get_employee_by_id(@PathVariable Long id){
+        return employeeService.searchEmployee(id);
+    }
     //Update
     @PatchMapping("/{id}")
     public Employee route_update_Employee(@PathVariable Long id, @RequestBody EmployeeUpdate emp){
@@ -47,6 +52,6 @@ public class EmployeeController {
     //Delete
     @DeleteMapping("/{id}")
     public boolean route_delete_Employee(@PathVariable Long id){
-        return employeeService.DeleteEmployee(id);
+        return employeeService.deleteEmployee(id);
     }
 }

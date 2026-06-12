@@ -38,7 +38,6 @@ public class EmployeeService {
     }
 
     public Employee update_employee(Long id, EmployeeUpdate employee){
-
         Employee existingEmployee =
                 employeeRepository.findById(id)
                 .orElseThrow(
@@ -74,7 +73,7 @@ public class EmployeeService {
                 .findByNameContainingIgnoreCase(name);
     }
 
-    public boolean DeleteEmployee(Long id){
+    public boolean deleteEmployee(Long id){
         if(!employeeRepository.existsById(id)){
             throw new ResponseStatusException(
                     HttpStatusCode.valueOf(404),
